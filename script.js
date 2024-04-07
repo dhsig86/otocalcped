@@ -73,6 +73,73 @@ const medicamentos = {
         embalagem: 22.5, // ml
         administracoes_por_dia: 1,
     },
+    hidroxizina: {
+        dose_min_por_kg: 0.35,
+        dose_max_por_kg: 0.7,
+        maximo_diario_mg_por_kg: 2.0,
+        concentracao_massa: 2, //mg
+        concentracao_vol: 1, //mL
+        embalagem: 120, // ml
+        administracoes_por_dia: 3,
+    },
+
+    prednisolonagotas: {
+        gotas_por_kg_min: 1,
+        gotas_por_kg_max: 2,
+        maximo_diario_mg_por_kg: 1, //mg
+        concentracao_massa: 11, // mg
+        concentracao_vol: 1, // mL
+        embalagem: 20, // mL
+        gotas_por_ml: 20,
+        administracoes_por_dia: 1,
+        
+    },
+    prednisolonasol:{
+        dose_min_por_kg: 0.5,
+        dose_max_por_kg: 1,
+        maximo_diario_mg_por_kg: 1,
+        concentracao_massa: 3, //mg
+        concentracao_vol: 1, //mL
+        embalagem: 100, // ml
+        administracoes_por_dia: 1,
+    },
+    betametasona:{
+        dose_min_por_kg: 0.07,
+        dose_max_por_kg: 0.25,
+        maximo_diario_mg_por_kg: 0.4, //mg/kg/dia
+        concentracao_massa: 0.1, //mg
+        concentracao_vol: 1, //mL
+        embalagem: 120, // ml
+        administracoes_por_dia: 3,
+    },
+    cefuroxima: {
+        dose_min_por_kg: 10,
+        dose_max_por_kg: 15,
+        maximo_diario_mg_por_kg: 20, //mg/kg/dia
+        concentracao_massa: 50, //mg
+        concentracao_vol: 1, //mL
+        embalagem: 50, // ml
+        administracoes_por_dia: 2,    
+    },
+    claritromicina25: {
+        dose_min_por_kg: 7.5,
+        dose_max_por_kg: 15,
+        maximo_diario_mg_por_kg: 15, //mg/kg/dia
+        concentracao_massa: 25, //mg
+        concentracao_vol: 1, //mL
+        embalagem: 60, // ml
+        administracoes_por_dia: 2,    
+    },
+
+    claritromicina50: {
+        dose_min_por_kg: 10,
+        dose_max_por_kg: 15,
+        maximo_diario_mg_por_kg: 15, //mg/kg/dia
+        concentracao_massa: 50, //mg
+        concentracao_vol: 1, //mL
+        embalagem: 60, // ml
+        administracoes_por_dia: 2,    
+    },
     // Adicione mais medicamentos conforme necessário...
 };
 
