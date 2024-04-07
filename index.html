@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Calculadora OTO-Pediátricas</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles2.css">
 </head>
 <body>
 <div id="head">
     <h1>Calculadora OTO-Pediátricas</h1>
     <h2>Ferramenta para cálculo de dosagens medicamentosas, em solução oral para idades pediátricas</h2>
-    <h3>Funciona melhor para pacientes até 30kgs.</h3>
+    <h3>Funciona melhor para pacientes até 40kgs.</h3>
 </div>
 <div id="main">
     <form name="formulario">
+        <div class="module">
         <fieldset>
-            <legend>Calculadora Pediatrica</legend>
-            <div class="row">
-                <label for="peso" class="etiqueta">Peso (kg):</label>
-                <input type="number" id="peso" name="peso" value="" min="3" max="40" required>
+            <legend>Variavéis</legend>
+            <div class="row1">
+                <label for="peso" class="etiqueta" >Peso (kg):</label>
+                <input type="number" id="peso" name="peso" value="" min="3" max="40" placeholder="Insira o peso em kg" required >
             </div>
-            <div class="row">
+            <div class="row2">
                 <label for="droga" class="etiqueta">Medicamento:</label>
                 <select name="droga" id="droga" required>
                     <option value="">Selecione um medicamento</option>
@@ -30,10 +31,10 @@
                         <option value="ibuprofeno_100">Ibuprofeno 100</option>
                     </optgroup>
                     <optgroup label="Antibióticos">
-                        <option value="amoxicilina">Amoxicilina</option>
-                        <option value="amoxicilinaclavulanato">Amoxicilina Clavulanato</option>
+                        <option value="amoxicilina">Amoxicilina 250mg</option>
+                        <option value="amoxicilinaclavulanato">Amoxicilina Clavulanato 400mg</option>
                         <option value="azitromicina">Azitromicina 900mg</option>
-                        <option value="cefaclor">Cefaclor BD</option>
+                        <option value="cefaclor">Cefaclor BD 375mg </option>
                         <option value="cefalexina">Cefalexina</option>
                         <option value="cefuroxima">AxetilCefuroxima (3ªG)</option>
                         <option value="claritromicina">Claritromicina</option>
@@ -53,46 +54,52 @@
                         <!-- Pode adicionar mais corticóides aqui -->
                     </optgroup>
                 </select>
-                
-            </div>
-            <div class="row">
-                <label class="etiqueta">Dose (mg/kg):</label>
-                <input type="number" name="dose_min" id="dose_min" placeholder="Mínima" required>
-                <input type="number" name="dose_max" id="dose_max" placeholder="Máxima" required>
-            </div>
-            <div class="row">
+            </div>    
+            <div class="row3">
                 <label class="etiqueta">Frequência:</label>
                 <input type="radio" name="dividida" id="d1" value="1" checked> <label for="d1">Por tomada</label>
                 <input type="radio" name="dividida" id="d2" value="2"> <label for="d2">12h</label>
                 <input type="radio" name="dividida" id="d3" value="3"> <label for="d3">8h</label>
                 <input type="radio" name="dividida" id="d4" value="4"> <label for="d4">6h</label>
             </div>
-            <div class="row">
+            
+            <div class="row4">
+                <label class="etiqueta">Dose (mg/kg) ou (Gotas/kg):</label>
+                <input type="number" name="dose_min" id="dose_min" placeholder="Mínima" required>
+                <input type="number" name="dose_max" id="dose_max" placeholder="Máxima" required>
+            </div>
+            
+            <div class="row4">
                 <label class="etiqueta">Concentração:</label>
                 <input type="number" name="x_mg" id="x_mg" placeholder="mg" required> /
                 <input type="number" name="x_vol" id="x_vol" placeholder="mL" required>
             </div>
-            <div class="row">
+            <div class="row4">
                 <label for="tamanho" class="etiqueta">Embalagem (mL):</label>
                 <input type="number" name="tamanho" id="tamanho" placeholder="ml">
             </div>
             <!-- Dentro de <div id="main"> no formulário -->
             <div class="row">
-                <button type="button" class="botao" onclick="calcularDose()">Calcular</button>
+                <button type="button" id="calcularBtn" class="botao">Calcular</button>
+            </div>
             </div>
         </fieldset>
+        <div class="module resultado">
         <fieldset>
             <legend>Prescrição</legend>
-            <div class="row">
-                <label for="prescricao_min" class="etiqueta">Administrar:</label>
-                <input type="text" id="prescricao_min" readonly>
-                <button type="button" class="copiar-btn" id="copiarBtn" style="display: none;" onclick="copiarPrescricao()">Copiar</button>
+            <div class="row5">
+                <label for="prescricao_min" class="etiqueta"></label>
+                <div id="prescricao_min" class="prescricao-output"></div>
+                <button type="button" class="copiar-btn" id="copiarBtn" >Copiar</button>
+                <button type="button" id="compartilharBtn" class="botao compartilhar-btn">Compartilhar</button>
+
             </div>
             <div type="number" id="doseMaximaDiaria">Dose Máxima Diária</div>
             <!-- Dentro da área de Prescrição, após o input de resultado -->
             
 
         </fieldset>
+        </div>
     </form>
 </div>
 <script src="script.js"></script>
