@@ -180,8 +180,3 @@ input[type='number'], select, .prescricao-output {
     }
 }
 }
-
-    .botao {
-        width: 100%; /* Faz o botão ocupar toda a largura em telas pequenas */
-    }
-}
