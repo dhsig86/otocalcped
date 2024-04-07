@@ -76,151 +76,138 @@ const medicamentos = {
     // Adicione mais medicamentos conforme necessário...
 };
 
+document.addEventListener('DOMContentLoaded', function() {
+    setupEventListeners();
+});
 
-//Função para atualizar os campos de entrada com informações do medicamento selecionado
-function atualizarCamposMedicamento() {
-    const medicamentoSelecionado = document.formulario.droga.value;
+function setupEventListeners() {
+    document.getElementById('calcularBtn').addEventListener('click', validarPesoECalcularDose);
+    document.getElementById('droga').addEventListener('change', atualizarCamposMedicamentoEcalcularDose);
+    document.getElementById('copiarBtn').addEventListener('click', copiarPrescricao);
+    document.getElementById('copiarBtn').style.display = 'none';
+    document.getElementById('compartilharBtn').addEventListener('click', compartilharPrescricao);
+    document.getElementById('compartilharBtn').style.display = 'none';  //esconde o botao shared
+}
+
+function atualizarCamposMedicamentoEcalcularDose() {
+    const medicamentoSelecionado = document.getElementById('droga').value;
     const medicamento = medicamentos[medicamentoSelecionado];
 
     if (medicamento) {
-        document.formulario.x_mg.value = medicamento.concentracao_massa;
-        document.formulario.x_vol.value = medicamento.concentracao_vol;
-        document.formulario.tamanho.value = medicamento.embalagem;
+        document.getElementById('x_mg').value = medicamento.concentracao_massa;
+        document.getElementById('x_vol').value = medicamento.concentracao_vol;
+        document.getElementById('tamanho').value = medicamento.embalagem;
 
-        // Define doses padrão para todos os medicamentos
-        let doseMin = medicamento.dose_min_por_kg;
-        let doseMax = medicamento.dose_max_por_kg;
-
-        // Ajusta as doses para ibuprofenos específicos
-        if (medicamentoSelecionado === 'ibuprofeno_50') {
-            // A dose é baseada em gotas por kg diretamente
-            doseMin = medicamento.gotas_por_kg_min; // 1 gota por kg
-            doseMax = medicamento.gotas_por_kg_max; // 2 gotas por kg
-        } else if (medicamentoSelecionado === 'ibuprofeno_100') {
-            // A dose é metade do ibuprofeno_50
-            doseMin = medicamento.gotas_por_kg_min / 2; // 0.5 gota por kg
-            doseMax = medicamento.gotas_por_kg_max / 2; // 1 gota por kg
-        }
-
-        // Atualiza os campos de dose mínima e máxima
-        document.formulario.dose_min.value = doseMin;
-        document.formulario.dose_max.value = doseMax;
-    }
-}
-
-function exibirDoseMaximaDiaria(pesoPaciente, medicamentoSelecionado) {
-    const medicamento = medicamentos[medicamentoSelecionado];
-    let doseMaximaDiariaTexto;
-
-    if (medicamento) {
-        
-        if (medicamentoSelecionado === 'cefaclor') {
-            const doseMaximaDiariaMg = Math.min(pesoPaciente * medicamento.maximo_diario_mg_por_kg, 1000); // Limita a 1g
-            const doseMaximaDiariaMl = (doseMaximaDiariaMg / medicamento.concentracao_massa) * medicamento.concentracao_vol;
-    
-            doseMaximaDiariaTexto = `Dose máxima diária para Cefaclor: ${doseMaximaDiariaMl.toFixed(2)} mL.`;
+        if ('gotas_por_kg_min' in medicamento && 'gotas_por_kg_max' in medicamento) {
+            document.getElementById('dose_min').value = medicamento.gotas_por_kg_min;
+            document.getElementById('dose_max').value = medicamento.gotas_por_kg_max;
+            document.getElementById('dose_min').placeholder = 'Gotas por kg';
+            document.getElementById('dose_max').placeholder = 'Gotas por kg';
         } else {
-        // Para ibuprofeno, a dose máxima diária é calculada em gotas
-        if (medicamentoSelecionado.includes('ibuprofeno')) {
-            const doseMaximaDiariaGotas = (pesoPaciente * medicamento.maximo_diario_gotas_por_kg) / medicamento.administracoes_por_dia;
-            doseMaximaDiariaTexto = `Dose máxima diária por tomada para ${medicamentoSelecionado}: ${doseMaximaDiariaGotas.toFixed(0)} gotas`;
-        } else {
-            // Para outros medicamentos, a dose máxima diária é calculada em mg
-            const doseMaximaDiariaMg = (pesoPaciente * medicamento.maximo_diario_mg_por_kg);
-            doseMaximaDiariaTexto = `Dose máxima diária por tomada para ${medicamentoSelecionado}: ${doseMaximaDiariaMg.toFixed(2)} mg`;
+            document.getElementById('dose_min').value = medicamento.dose_min_por_kg;
+            document.getElementById('dose_max').value = medicamento.dose_max_por_kg;
+            document.getElementById('dose_min').placeholder = 'Dose mínima (mg/kg)';
+            document.getElementById('dose_max').placeholder = 'Dose máxima (mg/kg)';
         }
     }
-        document.getElementById('doseMaximaDiaria').textContent = doseMaximaDiariaTexto;
-    }
-  }
-
-
-// Função para verificar frequencia maxima diaria.
-function verificarFrequencia(medicamentoSelecionado, frequenciaSelecionada) {
-    const medicamento = medicamentos[medicamentoSelecionado];
-    if (parseInt(frequenciaSelecionada) > medicamento.administracoes_por_dia) {
-        alert("Frequência incompatível com o medicamento selecionado.");
-        return false; // Indica incompatibilidade
-    }
-    return true; // Indica compatibilidade
+    // Não chame calcularDose aqui se você deseja que o cálculo ocorra apenas quando o botão for pressionado.
 }
-  // Função para calcular e exibir a dose
+
+
+
 function calcularDose() {
-    const pesoPaciente = parseFloat(document.formulario.peso.value);
-    const medicamentoSelecionado = document.formulario.droga.value;
+    const peso = parseFloat(document.getElementById('peso').value);
+    const medicamentoSelecionado = document.getElementById('droga').value;
     const medicamento = medicamentos[medicamentoSelecionado];
-    const frequenciaSelecionada = document.querySelector('input[name="dividida"]:checked').value;
+    const frequenciaSelecionada = parseInt(document.querySelector('input[name="dividida"]:checked').value, 10);
 
-    let frequenciaDescricao = "";
-    let vezesPorDia;
-
-    switch (frequenciaSelecionada) {
-        case '1': frequenciaDescricao = "por tomada"; vezesPorDia = 1; break;
-        case '2': frequenciaDescricao = "a cada 12 horas"; vezesPorDia = 2; break;
-        case '3': frequenciaDescricao = "a cada 8 horas"; vezesPorDia = 3; break;
-        case '4': frequenciaDescricao = "a cada 6 horas"; vezesPorDia = 4; break;
-        default: frequenciaDescricao = "Verifique a frequência"; vezesPorDia = 0; break;
-    }
-    // Verifica se a frequência selecionada é compatível
-    if (!verificarFrequencia(medicamentoSelecionado, frequenciaSelecionada)) {
-        return; // Se a frequência não for compatível, retorna imediatamente
-    }
-    if (!pesoPaciente || pesoPaciente < 3 || pesoPaciente > 40) {
-        alert("Por favor, insira um peso válido entre 3 e 40kg.");
+    if (!medicamento) {
+        console.error('Medicamento não selecionado ou não encontrado na lista de medicamentos.');
         return;
     }
 
-    if (medicamento) {
-        let resultado;
-        if (medicamentoSelecionado === 'cefaclor') {
-            // Garante que a dose não exceda o máximo diário
-            const doseTotalMg = Math.min(pesoPaciente * medicamento.dose_min_por_kg, 1000);
-            const doseTotalMl = (doseTotalMg / medicamento.concentracao_massa) * medicamento.concentracao_vol;
-            resultado = `Administrar ${doseTotalMl.toFixed(2)} mL por tomada, ${vezesPorDia} vezes ao dia.`;
-        } else {
-        if (medicamentoSelecionado.includes('ibuprofeno')) {
-            const gotasPorTomadaMin = pesoPaciente * medicamento.gotas_por_kg_min;
-            const gotasPorTomadaMax = pesoPaciente * medicamento.gotas_por_kg_max;
-            resultado = `Administrar ${gotasPorTomadaMin.toFixed(0)} a ${gotasPorTomadaMax.toFixed(0)} gotas por tomada, ${vezesPorDia} vezes ao dia.`;
-        } else {
-            const dosePorTomadaMinMg = pesoPaciente * medicamento.dose_min_por_kg;
-            const dosePorTomadaMaxMg = pesoPaciente * medicamento.dose_max_por_kg;
-            const dosePorTomadaMinMl = (dosePorTomadaMinMg / medicamento.concentracao_massa) * medicamento.concentracao_vol;
-            const dosePorTomadaMaxMl = (dosePorTomadaMaxMg / medicamento.concentracao_massa) * medicamento.concentracao_vol;
-            resultado = `Administrar de ${dosePorTomadaMinMg.toFixed(0)}mg (${dosePorTomadaMinMl.toFixed(1)}ml) a ${dosePorTomadaMaxMg.toFixed(0)}mg (${dosePorTomadaMaxMl.toFixed(1)}ml) por tomada, ${vezesPorDia} vezes ao dia.`;
-        }
-     }
-        document.formulario.prescricao_min.value = resultado;
-        exibirDoseMaximaDiaria(pesoPaciente, medicamentoSelecionado);
-        // No final da sua função calcularDose, antes de sair da função
-        document.getElementById('copiarBtn').style.display = 'inline-block';
-
-        
+    const vezesPorDia = frequenciaSelecionada;
+    if (frequenciaSelecionada > medicamento.administracoes_por_dia) {
+        alert("Frequência incompatível com o medicamento selecionado.");
+        return;
     }
-}
-document.getElementById('copiarBtn').addEventListener('click', copiarPrescricao);
 
+    let resultado, doseMaximaDiariaTexto;
+
+    if ('gotas_por_kg_min' in medicamento) {
+        // Cálculo para gotas
+        const gotasPorTomadaMin = peso * medicamento.gotas_por_kg_min / frequenciaSelecionada;
+        const gotasPorTomadaMax = peso * medicamento.gotas_por_kg_max / frequenciaSelecionada;
+        resultado = `Administrar de ${gotasPorTomadaMin.toFixed(0)} a ${gotasPorTomadaMax.toFixed(0)} gotas por tomada, de ${frequenciaDescricao(vezesPorDia)}.`;
+        doseMaximaDiariaTexto = `${(peso * medicamento.maximo_diario_gotas_por_kg).toFixed(0)} gotas`;
+    } else {
+        // Cálculo para ml e mg
+        const dosePorTomadaMinMg = peso * medicamento.dose_min_por_kg / frequenciaSelecionada;
+        const dosePorTomadaMaxMg = peso * medicamento.dose_max_por_kg / frequenciaSelecionada;
+        const dosePorTomadaMinMl = dosePorTomadaMinMg / (medicamento.concentracao_massa / medicamento.concentracao_vol);
+        const dosePorTomadaMaxMl = dosePorTomadaMaxMg / (medicamento.concentracao_massa / medicamento.concentracao_vol);
+        resultado = `Administrar de ${dosePorTomadaMinMl.toFixed(1)}ml (${dosePorTomadaMinMg.toFixed(0)}mg) a ${dosePorTomadaMaxMl.toFixed(1)}ml (${dosePorTomadaMaxMg.toFixed(0)}mg) por tomada, de ${frequenciaDescricao(vezesPorDia)}.`;
+        doseMaximaDiariaTexto = `${(peso * medicamento.maximo_diario_mg_por_kg).toFixed(0)}mg (${(peso * medicamento.maximo_diario_mg_por_kg / (medicamento.concentracao_massa / medicamento.concentracao_vol)).toFixed(1)}ml)`;
+    }
+
+    // Correção para usar textContent e evitar XSS
+    document.getElementById('prescricao_min').innerHTML = resultado;
+    document.getElementById('doseMaximaDiaria').innerHTML = 'Dose Máxima Diária: ' + doseMaximaDiariaTexto;
+    
+    // Certifique-se de mostrar os botões após o cálculo
+    document.getElementById('copiarBtn').style.display = 'block';
+    document.getElementById('compartilharBtn').style.display = 'block';
+
+    // Removendo a chamada recursiva para calcularDose()
+    // calcularDose(); // Esta linha deve ser removida
+}
+
+
+function frequenciaDescricao(frequenciaSelecionada) {
+    const frequencias = {
+        1: "1 vez ao dia",
+        2: "de 12/12 horas",
+        3: "de 8/8 horas",
+        4: "de 6/6 horas"
+    };
+    return frequencias[frequenciaSelecionada] || "";
+}
+
+function validarPesoECalcularDose() {
+    const pesoInput = document.getElementById('peso');
+    const peso = parseFloat(pesoInput.value);
+    if (pesoInput.value === "") {
+        alert("Por favor, insira o peso.");
+        return;
+    }
+    if (isNaN(peso) || peso < 3 || peso > 40) {
+        alert("Por favor, insira um peso válido entre 3 e 40kg.");
+        return;
+    }
+    calcularDose();
+}
 async function copiarPrescricao() {
-    const textoParaCopiar = document.getElementById('prescricao_min').value; // Assume que 'prescricao_min' é o id do elemento com o texto a ser copiado
+    const textoParaCopiar = document.getElementById('prescricao_min').textContent;
     try {
         await navigator.clipboard.writeText(textoParaCopiar);
         alert("Prescrição copiada com sucesso!");
     } catch (err) {
-        console.error("Falha ao copiar: ", err);
         alert("Erro ao copiar a prescrição.");
     }
 }
-// Adiciona ouvintes de evento
-document.getElementById('copiarBtn').addEventListener('click', copiarPrescricao);
+async function compartilharPrescricao() {
+    const textoParaCompartilhar = document.getElementById('prescricao_min').textContent;
+    if (!navigator.share) {
+        alert("Seu navegador não suporta a funcionalidade de compartilhamento.");
+        return;
+    }
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.formulario.peso.addEventListener('change', calcularDose);
-    document.formulario.droga.addEventListener('change', function() {
-        atualizarCamposMedicamento();
-        // O cálculo é feito imediatamente após a seleção de um medicamento
-        calcularDose();
-    });
-    // Esconde inicialmente o botão de copiar até que seja necessário
-    document.getElementById('copiarBtn').style.display = 'none';
-});
-
+    try {
+        await navigator.share({
+            title: 'Prescrição Médica',
+            text: textoParaCompartilhar
+        });
+    } catch (err) {
+        alert("Não foi possível compartilhar a prescrição.");
+    }
+}
