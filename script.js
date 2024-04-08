@@ -29,9 +29,9 @@ const medicamentos = {
         administracoes_por_dia: 3,
     },
     dipirona: {
-        dose_min_por_kg: 10,
-        dose_max_por_kg: 15,
-        maximo_diario_mg_por_kg: 1000,
+        dose_min_por_kg: 12.5,
+        dose_max_por_kg: 25,
+        maximo_diario_mg_por_kg: 100,
         concentracao_massa: 50, //mg
         concentracao_vol: 1, //mL
         embalagem: 100, // ml
@@ -112,10 +112,20 @@ const medicamentos = {
         embalagem: 120, // ml
         administracoes_por_dia: 3,
     },
+    dexametasona:{
+        dose_min_por_kg: 0.75,
+        dose_max_por_kg: 15,
+        maximo_diario_mg_por_kg: 15, //mg/kg/dia
+        concentracao_massa: 0.1, //mg
+        concentracao_vol: 1, //mL
+        embalagem: 120, // ml
+        administracoes_por_dia: 3,
+    },
+
     cefuroxima: {
         dose_min_por_kg: 10,
         dose_max_por_kg: 15,
-        maximo_diario_mg_por_kg: 20, //mg/kg/dia
+        maximo_diario_mg_por_kg: 25, //mg/kg/dia
         concentracao_massa: 50, //mg
         concentracao_vol: 1, //mL
         embalagem: 50, // ml
@@ -213,7 +223,7 @@ function calcularDose() {
         const dosePorTomadaMaxMg = peso * medicamento.dose_max_por_kg / frequenciaSelecionada;
         const dosePorTomadaMinMl = dosePorTomadaMinMg / (medicamento.concentracao_massa / medicamento.concentracao_vol);
         const dosePorTomadaMaxMl = dosePorTomadaMaxMg / (medicamento.concentracao_massa / medicamento.concentracao_vol);
-        resultado = `Administrar de ${dosePorTomadaMinMl.toFixed(1)}ml (${dosePorTomadaMinMg.toFixed(0)}mg) a ${dosePorTomadaMaxMl.toFixed(1)}ml (${dosePorTomadaMaxMg.toFixed(0)}mg) por tomada, de ${frequenciaDescricao(vezesPorDia)}.`;
+        resultado = `Administrar de ${dosePorTomadaMinMl.toFixed(1)}ml (${dosePorTomadaMinMg.toFixed(0)}mg) a ${dosePorTomadaMaxMl.toFixed(1)}ml (${dosePorTomadaMaxMg.toFixed(0)}mg) por tomada, ${frequenciaDescricao(vezesPorDia)}.`;
         doseMaximaDiariaTexto = `${(peso * medicamento.maximo_diario_mg_por_kg).toFixed(0)}mg (${(peso * medicamento.maximo_diario_mg_por_kg / (medicamento.concentracao_massa / medicamento.concentracao_vol)).toFixed(1)}ml)`;
     }
 
